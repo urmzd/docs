@@ -15,9 +15,12 @@ class Links(HTMLParser):
         super().__init__()
         self.references = []
         self.canonical = None
+        self.anchors = []
 
     def handle_starttag(self, tag, attributes):
         attrs = dict(attributes)
+        if tag == "a" and attrs.get("href"):
+            self.anchors.append(attrs["href"])
         if tag == "link" and "canonical" in attrs.get("rel", "").split():
             self.canonical = attrs.get("href")
         for key in ("href", "src", "poster"):
@@ -40,7 +43,8 @@ def local_target(site, page_url, reference):
 def verify(site):
     errors = []
     pages = sorted(site.rglob("*.html"))
-    for relative in ["index.html", "404.html", *(p + "/index.html" for p in PROJECTS)]:
+    book_homes = {f"{name}/index.html" for name in PROJECTS}
+    for relative in ["index.html", "404.html", *book_homes]:
         if not (site / relative).is_file():
             errors.append(f"Missing {relative}")
     for page in pages:
@@ -50,6 +54,9 @@ def verify(site):
         links.feed(page.read_text())
         if page.name == "index.html" and links.canonical != url:
             errors.append(f"{relative} has canonical {links.canonical!r}, expected {url}")
+        if relative in book_homes:
+            if not any(urljoin(url, href) == BASE for href in links.anchors):
+                errors.append(f"{relative} is missing a link back to the hub")
         if relative == "index.html":
             for project in PROJECTS:
                 if project + "/" not in links.references:
