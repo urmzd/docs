@@ -22,7 +22,7 @@ class PagesHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--directory", type=Path, default=Path("site"))
+    parser.add_argument("--directory", type=Path, default=Path("public"))
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     if not (args.directory / "404.html").is_file():

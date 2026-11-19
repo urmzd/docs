@@ -1,33 +1,30 @@
 # Project documentation
 
-The index at [docs.urmzd.com](https://docs.urmzd.com/) connects three books. Each product repository owns its Markdown and root `zensical.toml`. This repository owns the pins, index and Pages workflow.
+The account site at [docs.urmzd.com](https://docs.urmzd.com/) helps readers find a project guide. Its GitHub Pages workflow publishes the contents of `public/`, which contains the index, stylesheet and 404 page.
 
-| Book | Source | Published path |
+| To update | Change the source in | Published address |
 | --- | --- | --- |
-| Saige | [urmzd/saige](https://github.com/urmzd/saige) | `/saige/` |
-| Orchagent | [urmzd/orchagent](https://github.com/urmzd/orchagent) | `/orchagent/` |
-| Humagen | [urmzd/humagen](https://github.com/urmzd/humagen) | `/humagen/` |
+| Agent SDK guide | [urmzd/saige](https://github.com/urmzd/saige) | [Saige](https://docs.urmzd.com/saige/) |
+| Agent orchestration guide | [urmzd/orchagent](https://github.com/urmzd/orchagent) | [Orchagent](https://docs.urmzd.com/orchagent/) |
+| Workspace guide | [urmzd/humagen](https://github.com/urmzd/humagen) | [Humagen](https://docs.urmzd.com/humagen/) |
 
-## Preview a release
+## Change the landing page
 
-From this checkout, with Git and Python 3.11 or later installed, run the following commands. The build fetches each pinned commit into a temporary checkout and runs Zensical 0.1.2 there. Only the three rendered books and the files in `public/` enter `site/`.
+Edit `public/index.html`, `public/style.css` or `public/404.html`. Use Python 3 to check the links and preview the account site locally.
 
 ```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r requirements.txt
-python scripts/build.py
-python scripts/serve.py
+python3 scripts/check_site.py
+python3 scripts/serve.py
 ```
 
-Open [the local index](http://127.0.0.1:8000/). Follow a project link, then open a chapter and try its search box. A missing URL such as `/saige/missing/chapter/` should return HTTP 404 and a link back to the index. Stop the preview with Ctrl+C.
+Open [the local preview](http://127.0.0.1:8000/). Check the three guide links and try a missing URL to verify its link back to the index. The local server serves the account site's files. Use the published addresses above to read the project guides.
 
-To build from local clones that already contain all three commits, pass their parent directory using `python scripts/build.py --local ../`. The build still checks out the exact revisions. To repeat just the assembled-site checks, run `python scripts/check_site.py site`.
+Open a pull request for the landing page change. The workflow checks the HTML on pull requests and publishes `public/` through the `github-pages` environment on `main`.
 
-## Publish a product documentation change
+## Publish a project guide
 
-1. Merge and verify the documentation change in the product repository. Copy its full commit SHA. Each book must build from its root with `zensical build --clean --strict` and set `project.site_url` to its published directory.
-2. Replace that product’s `revision` in [sources.json](sources.json) and open a pull request here. The build checks all three books, their canonical URLs, local links, referenced assets and search documents.
-3. Merge the passing pin change to `main`. GitHub Actions uploads the whole site as one artifact and deploys it through the `github-pages` environment. To roll back, revert the pin change and let the same workflow publish the previous contents.
+Change the Markdown and `zensical.toml` in the product repository. Its own Pages workflow builds the guide and publishes that repository’s `site/` artifact. To roll back a guide, revert its source change there.
 
-The Pages source for this repository is GitHub Actions. The custom domain is `docs.urmzd.com`. [Pages workflow settings](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+## How URLs resolve
+
+GitHub designates `urmzd/urmzd.github.io` as the account site. Set its Pages custom domain to `docs.urmzd.com`. Enable GitHub Actions as the Pages source in each of the three product repositories and leave their custom domains empty. GitHub serves each public project site at the inherited host under its repository name. Each book’s `project.site_url` should match the corresponding published address above. [GitHub’s custom domain inheritance rules](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-a-custom-domain-across-multiple-repositories)
