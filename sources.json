@@ -1,0 +1,17 @@
+[
+  {
+    "slug": "saige",
+    "repository": "urmzd/saige",
+    "revision": "382e87d532906327f1af54f4030ba462fad43ef8"
+  },
+  {
+    "slug": "orchagent",
+    "repository": "urmzd/orchagent",
+    "revision": "e64ee4de452a14d678643de2d618a7b7eb1fc256"
+  },
+  {
+    "slug": "humagen",
+    "repository": "urmzd/humagen",
+    "revision": "01ae91bcaee71e1ee43bb29ed8b6b1451019859c"
+  }
+]

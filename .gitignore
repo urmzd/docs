@@ -1,0 +1,5 @@
+/site/
+/.books/
+__pycache__/
+/docs-build-*/
+/.venv/
