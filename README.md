@@ -1,6 +1,6 @@
 # Project documentation
 
-The account site at [docs.urmzd.com](https://docs.urmzd.com/) helps readers find a project guide. Its GitHub Pages workflow publishes the contents of `public/`, which contains the index, 404, styles and shared brand assets.
+The account site at [docs.urmzd.com](https://docs.urmzd.com/) helps readers find a project guide. Its GitHub Pages workflow publishes `public/` (the index, 404, styles and shared brand assets) together with each project guide, built from the `main` branch of its own repository.
 
 | To update | Change the source in | Published address |
 | --- | --- | --- |
@@ -17,7 +17,13 @@ python3 scripts/check_site.py
 python3 scripts/serve.py
 ```
 
-Open [the local preview](http://127.0.0.1:8000/). Check the three guide links and try a missing URL to verify its link back to the index. The local server serves the account site's files. Use the published addresses above to read the project guides.
+Open [the local preview](http://127.0.0.1:8000/). Check the three guide links and try a missing URL to verify its link back to the index. The local server serves the account site's files. To preview the full site with all three guides, build it first:
+
+```sh
+python3 -m pip install zensical==0.1.2
+scripts/build_site.sh _site
+python3 scripts/serve.py --directory _site
+```
 
 Open a pull request for the landing page change. The workflow checks the HTML on pull requests and publishes `public/` through the `github-pages` environment on `main`.
 
@@ -29,13 +35,13 @@ Books can load `/brand/zensical.css`, `/brand/logo-mark.svg` and `/brand/favicon
 
 ## Preview a guide with the shared brand
 
-Build the guide in its product repository. Keep a checkout of [urmzd.github.io](https://github.com/urmzd/urmzd.github.io) beside that repository. From the product root, mount its generated `site/` and the account’s brand assets under the same paths that Pages serves.
+Build the guide in its product repository. Keep a checkout of [docs.urmzd.com](https://github.com/urmzd/docs.urmzd.com) beside that repository. From the product root, mount its generated `site/` and the account’s brand assets under the same paths that Pages serves.
 
 ```sh
 project=saige  # or orchagent or humagen
 preview_dir=$(mktemp -d)
 ln -s "$PWD/site" "$preview_dir/$project"
-ln -s "$PWD/../urmzd.github.io/public/brand" "$preview_dir/brand"
+ln -s "$PWD/../docs.urmzd.com/public/brand" "$preview_dir/brand"
 python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
 ```
 
@@ -43,8 +49,8 @@ For `project=saige`, open [the local Saige guide](http://127.0.0.1:8000/saige/).
 
 ## Publish a project guide
 
-Change the Markdown and `zensical.toml` in the product repository. Its own Pages workflow builds the guide and publishes that repository’s `site/` artifact. To roll back a guide, revert its source change there.
+Change the Markdown and `zensical.toml` in the product repository and merge to `main`. The product repository checks the build on pull requests but does not deploy. This repository's workflow rebuilds every guide on its own pushes, on manual runs and every 30 minutes; the scheduled run deploys only when a book's `main` differs from the commit recorded in [`versions.json`](https://docs.urmzd.com/versions.json). Run the Documentation workflow manually to publish a guide sooner. To roll back a guide, revert its source change there.
 
 ## How URLs resolve
 
-GitHub designates `urmzd/urmzd.github.io` as the account site. Set its Pages custom domain to `docs.urmzd.com`. Enable GitHub Actions as the Pages source in each of the three product repositories and leave their custom domains empty. GitHub serves each public project site at the inherited host under its repository name. Each book’s `project.site_url` should match the corresponding published address above. [GitHub’s custom domain inheritance rules](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-a-custom-domain-across-multiple-repositories)
+`docs.urmzd.com` is the Pages custom domain of this repository, with a Route 53 CNAME to `urmzd.github.io` managed in `urmzd/infra`. Every guide is a directory of this one Pages artifact, so the product repositories need no Pages site of their own. Each book's `site_url` in `zensical.toml` must match its published address above.
