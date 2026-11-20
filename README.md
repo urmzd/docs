@@ -27,6 +27,20 @@ The index uses the logo, Elza Text and neutral surfaces from [the portfolio’s 
 
 Books can load `/brand/zensical.css`, `/brand/logo-mark.svg` and `/brand/favicon.svg` from this account site. The stylesheet imports `/brand/fonts.css`, which references the portfolio’s Adobe Fonts kit and two local IBM Plex Mono weights. Publish compatible changes to these paths before deploying a book that uses them. See the [asset credits and licenses](public/brand/CREDITS.txt).
 
+## Preview a guide with the shared brand
+
+Build the guide in its product repository. Keep a checkout of [urmzd.github.io](https://github.com/urmzd/urmzd.github.io) beside that repository. From the product root, mount its generated `site/` and the account’s brand assets under the same paths that Pages serves.
+
+```sh
+project=saige  # or orchagent or humagen
+preview_dir=$(mktemp -d)
+ln -s "$PWD/site" "$preview_dir/$project"
+ln -s "$PWD/../urmzd.github.io/public/brand" "$preview_dir/brand"
+python3 -m http.server 8000 --bind 127.0.0.1 --directory "$preview_dir"
+```
+
+For `project=saige`, open [the local Saige guide](http://127.0.0.1:8000/saige/). Use `/orchagent/` or `/humagen/` for the other guides. Stop with Ctrl+C. The temporary directory contains only links to the guide and shared assets.
+
 ## Publish a project guide
 
 Change the Markdown and `zensical.toml` in the product repository. Its own Pages workflow builds the guide and publishes that repository’s `site/` artifact. To roll back a guide, revert its source change there.
